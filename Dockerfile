@@ -36,4 +36,4 @@ EXPOSE 10000
 
 # Run with Gunicorn for production
 # Use ${PORT:-10000} to default to 10000 if PORT not set
-CMD gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 2 --threads 4 --timeout 120 app:app
+CMD gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 2 --threads 4 --timeout 120 wsgi:app
