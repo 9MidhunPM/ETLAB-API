@@ -1,0 +1,21 @@
+# Core Flask Dependencies
+Flask==3.0.3
+Flask-CORS==4.0.1
+Werkzeug==3.0.3
+
+# HTTP and Web Scraping
+requests==2.31.0
+beautifulsoup4==4.12.3
+lxml==5.1.0
+
+# Configuration
+python-dotenv==1.0.1
+
+# Cloudflare Bypass (Core)
+cloudscraper==1.2.71
+fake-useragent==1.4.0
+httpx==0.25.2
+brotli==1.1.0
+
+# Production WSGI Server
+gunicorn==21.2.0

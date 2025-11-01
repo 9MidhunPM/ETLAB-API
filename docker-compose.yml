@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  etlabshr-python:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - FLASK_ENV=production
+      - APP_BASE_URL=https://sahrdaya.etlab.in
+      - APP_COOKIE_KEY=SAHRDAYASESSIONID
+      - APP_USER_AGENT=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36
+      - CORS_ALLOWED_ORIGINS=*
+      - CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS
+      - CORS_ALLOWED_HEADERS=*
+      - CORS_ALLOW_CREDENTIALS=true
+      - LOG_LEVEL=INFO
+      - CLOUDFLARE_BYPASS_ENABLED=true
+      - CLOUDFLARE_MAX_RETRIES=3
+      - CLOUDFLARE_RETRY_DELAY=5
+      - SELENIUM_HEADLESS=true
+      - SELENIUM_TIMEOUT=30
+      - CLOUDSCRAPER_DELAY=10
+      - REQUEST_TIMEOUT=30
+      - MAX_REQUEST_RETRIES=3
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  default:
+    name: etlabshr-network
