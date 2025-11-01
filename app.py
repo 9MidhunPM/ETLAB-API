@@ -9,6 +9,7 @@ from app.controllers.login_controller import login_bp
 from app.controllers.attendance_controller import attendance_bp
 from app.controllers.attendance_table_controller import attendance_table_bp
 from app.controllers.timetable_controller import timetable_bp
+from app.controllers.diagnostic_controller import diagnostic_bp
 from app.controllers.other_controllers import (
     web_bp, profile_bp, results_bp, status_bp, logout_bp
 )
@@ -47,6 +48,7 @@ def create_app():
     app.register_blueprint(results_bp)
     app.register_blueprint(status_bp)
     app.register_blueprint(logout_bp)
+    app.register_blueprint(diagnostic_bp)
     
     # Root route - API info
     @app.route('/')
@@ -64,7 +66,9 @@ def create_app():
                 "timetable": "/api/timetable",
                 "results": "/api/results",
                 "status": "/api/status",
-                "logout": "/api/logout"
+                "logout": "/api/logout",
+                "dns_test": "/api/diagnostic/dns-test",
+                "network_info": "/api/diagnostic/network-info"
             }
         }, 200
     
