@@ -16,6 +16,7 @@ cloudscraper==1.2.71
 fake-useragent==1.4.0
 httpx==0.25.2
 brotli==1.1.0
+dnspython==2.4.2
 
 # Production WSGI Server
 gunicorn==21.2.0

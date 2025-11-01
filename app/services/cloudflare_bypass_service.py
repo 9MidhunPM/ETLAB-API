@@ -6,6 +6,8 @@ import random
 from typing import Optional, Dict, Any
 from fake_useragent import UserAgent
 import httpx
+import socket
+import dns.resolver
 
 # Optional imports for advanced bypass methods
 try:
@@ -44,6 +46,9 @@ class CloudflareBypassService:
     def _init_sessions(self):
         """Initialize various session types"""
         try:
+            # Configure custom DNS resolution using public DNS servers
+            self._configure_dns()
+            
             # Initialize cloudscraper session
             self.cloudscraper_session = cloudscraper.create_scraper(
                 browser={
@@ -61,6 +66,50 @@ class CloudflareBypassService:
             
         except Exception as e:
             logger.error(f"Failed to initialize bypass sessions: {e}")
+    
+    def _configure_dns(self):
+        """Configure custom DNS resolution using public DNS servers"""
+        try:
+            # Configure dnspython to use public DNS servers
+            resolver = dns.resolver.Resolver()
+            resolver.nameservers = [
+                '8.8.8.8',      # Google DNS Primary
+                '8.8.4.4',      # Google DNS Secondary
+                '1.1.1.1',      # Cloudflare DNS Primary
+                '1.0.0.1',      # Cloudflare DNS Secondary
+            ]
+            resolver.timeout = 5
+            resolver.lifetime = 10
+            
+            # Set as default resolver
+            dns.resolver.default_resolver = resolver
+            
+            # Also configure socket-level DNS fallback
+            original_getaddrinfo = socket.getaddrinfo
+            
+            def custom_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+                """Custom DNS resolver with public DNS fallback"""
+                try:
+                    # Try default system DNS first
+                    return original_getaddrinfo(host, port, family, type, proto, flags)
+                except socket.gaierror as e:
+                    # If system DNS fails, try dnspython with public DNS
+                    try:
+                        answers = resolver.resolve(host, 'A')
+                        if answers:
+                            ip = str(answers[0])
+                            # Return result in getaddrinfo format
+                            return [(socket.AF_INET, socket.SOCK_STREAM, proto, '', (ip, port))]
+                    except Exception as dns_error:
+                        # Log DNS resolution failure
+                        logger.error(f"DNS resolution failed for {host}: system DNS={e}, public DNS={dns_error}")
+                    raise e
+            
+            # Override socket.getaddrinfo
+            socket.getaddrinfo = custom_getaddrinfo
+            
+        except Exception as e:
+            logger.error(f"Failed to configure custom DNS: {e}")
     
     def _setup_session_headers(self):
         """Setup realistic browser headers"""
