@@ -6,7 +6,6 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
-ENV PORT=10000
 
 # Set work directory
 WORKDIR /app
@@ -32,12 +31,9 @@ RUN useradd --create-home --shell /bin/bash app && \
     chown -R app:app /app
 USER app
 
-# Expose port (Render uses PORT env variable)
-EXPOSE ${PORT}
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT}/health || exit 1
+# Expose port (Render will set PORT dynamically)
+EXPOSE 10000
 
 # Run with Gunicorn for production
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 "app:create_app()"
+# Use ${PORT:-10000} to default to 10000 if PORT not set
+CMD gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 2 --threads 4 --timeout 120 app:app
