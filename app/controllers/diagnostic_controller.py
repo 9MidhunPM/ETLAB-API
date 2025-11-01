@@ -14,7 +14,7 @@ def test_dns():
     Test DNS resolution for the target host
     Useful for debugging network/DNS issues on different hosting platforms
     """
-    target_host = 'etlab.kem.edu.in'
+    target_host = 'sahrdaya.etlab.in'
     results = {
         'target': target_host,
         'system_dns': None,
